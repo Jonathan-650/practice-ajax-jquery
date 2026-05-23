@@ -10,6 +10,34 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Add post
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <label for="title-input">title</label>
+            <input type="text" id="title-input" class="form-control"/>
+            <label for="body-input">body</label>
+            <textarea id="body-input" class="form-control" style="min-height: 100px"></textarea>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="submit-button">Save changes</button>
+        </div>
+        </div>
+    </div>
+    </div>
+
     <table class="table">
     <thead>
         <tr>
@@ -50,6 +78,34 @@
             });
         })
     }
+
+    const createData = () => {
+        $.ajax({
+            url:"https://jsonplaceholder.typicode.com/posts",
+            method: "post",
+            contentType: "application/json",
+            data: JSON.stringify({
+                title: $('#title-input').val().trim(),
+                body: $('#body-input').val().trim(),
+                userId: 1,
+            }),
+            beforeSend: function(xhr) {
+                Swal.showLoading()
+            }
+        })
+        .done(function(data) {
+            Swal.close()
+            Swal.fire({
+                title: "Good job!",
+                text: "You clicked the button!",
+                icon: "success"
+            });
+        })
+    }
+    $(document).on("click", "#submit-button", function(){
+        createData()
+    })
+
 
     fetchData()
 </script>
