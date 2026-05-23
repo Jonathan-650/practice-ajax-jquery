@@ -20,7 +20,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
         <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <h5 class="modal-title" id="exampleModalLabel">Create Data</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
             </button>
@@ -33,6 +33,29 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-primary" id="submit-button">Save changes</button>
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="modal fade" id="edit-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Edit data</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <label for="title-input">title</label>
+            <input type="text" id="title-input-edit" class="form-control"/>
+            <label for="body-input">body</label>
+            <textarea id="body-input-edit" class="form-control" style="min-height: 100px"></textarea>
+            <input hidden type="text" id="id-input-edit" class="form-control"/>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="edit-button">Save changes</button>
         </div>
         </div>
     </div>
@@ -72,7 +95,15 @@
                         <th scope="row">${dt.id}</th>
                         <td>${dt.title}</td>
                         <td>${dt.body}</td>
-                        <td>@mdo</td>
+                        <td>
+                            <button type="button" class="btn btn-primary btn-update" data-bs-toggle="modal" data-bs-target="#edit-modal" 
+                                data-id="${dt.id}"
+                                data-title="${dt.title}"
+                                data-body="${dt.body}"
+                                >             
+                            EDIT
+                            </button>
+                        </td>
                     </tr>
                 `)
             });
@@ -105,6 +136,47 @@
     $(document).on("click", "#submit-button", function(){
         createData()
     })
+
+    const updateDataById = (id, title, body) => {
+        $.ajax({
+            url:`https://jsonplaceholder.typicode.com/posts/${id}`,
+            method: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({
+                title: title.trim(),
+                body: body.trim(),            
+            }),
+            beforeSend: function(xhr) {
+                Swal.showLoading()
+            }
+        })
+        .done(function(data) {
+            Swal.close()
+            Swal.fire({
+                title: "Good job!",
+                text: "You clicked the button!",
+                icon: "success"
+            });
+        })
+    }
+
+    $(document).on("click", ".btn-update", function(){
+        const id = $(this).data("id")
+        const title = $(this).data("title")
+        const body= $(this).data("body")
+        $('#title-input-edit').val(title)
+        $('#body-input-edit').val(body)
+        $('#id-input-edit').val(id)
+    })
+    
+    $(document).on("click", "#edit-button", function(){
+        const title = $('#title-input-edit').val()
+        const body = $('#body-input-edit').val()
+        const id =$('#id-input-edit').val()
+        updateDataById(id, title, body)
+    })
+
+    
 
 
     fetchData()
